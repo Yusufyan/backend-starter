@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CommandModule } from 'nestjs-command';
 import { PassportModule } from '@nestjs/passport';
 import { TokenModule } from './modules/token/token.module';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TokenModule } from './modules/token/token.module';
     UserModule,
     CommandModule,
     TokenModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],

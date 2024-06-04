@@ -13,13 +13,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { config } from 'src/config';
 import { TokenService } from 'src/modules/token/services/token.service';
 import { CreateTokenDTO } from 'src/modules/token/dtos/request.dto';
 import { IToken } from 'src/interfaces/token.interface';
 import { TokenType } from 'src/common/enums/index.enum';
 import * as dayjs from 'dayjs';
 import { of } from 'rxjs';
+import { config } from 'src/common/configs/index.config';
 
 @Injectable()
 export class UserCrudApplication {

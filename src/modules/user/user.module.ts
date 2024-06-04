@@ -8,7 +8,7 @@ import { UserCrudApplication } from './applications/user-crud.application';
 import { JwtStrategy } from './jwt.strategy';
 import { RoleModule } from '../role/role.module';
 import { TokenModule } from '../token/token.module';
-import { config } from 'src/config';
+import { config } from 'src/common/configs/index.config';
 
 @Module({
   imports: [
