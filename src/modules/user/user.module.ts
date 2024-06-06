@@ -9,6 +9,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { RoleModule } from '../role/role.module';
 import { TokenModule } from '../token/token.module';
 import { config } from 'src/common/configs/index.config';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { config } from 'src/common/configs/index.config';
     }),
     RoleModule,
     TokenModule,
+    MailModule,
   ],
   providers: [UserService, UserCrudApplication, JwtStrategy],
   controllers: [UserController],

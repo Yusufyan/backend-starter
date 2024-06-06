@@ -104,8 +104,20 @@ export class UserController {
   @Get('/details')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Permissions('READ_USER')
-  async getDetails(@Query() body: GetUserDTO): Promise<IApiResponse<any>> {
+  async getDetails(@Param() body: GetUserDTO): Promise<IApiResponse<any>> {
     const response = await this.crudApplication.getUserDetail(body);
+
+    return {
+      message: 'Success',
+      data: response,
+    };
+  }
+
+  @Get('/activation')
+  async activationAccount(
+    @Query('token') token: string,
+  ): Promise<IApiResponse<any>> {
+    const response = await this.crudApplication.activateAccount(token);
 
     return {
       message: 'Success',

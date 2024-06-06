@@ -24,7 +24,7 @@ export class TokenEntity implements IToken {
     enum: TokenType,
     default: TokenType.AUTH,
   })
-  puprose: TokenType;
+  purpose: TokenType;
 
   @Column({ name: 'is_active', default: false })
   isActive: boolean;

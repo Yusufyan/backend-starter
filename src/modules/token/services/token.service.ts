@@ -37,7 +37,7 @@ export class TokenService {
     });
   }
 
-  async deleteToken(user: any): Promise<void> {
-    await this.tokenRepository.delete({ user: user });
+  async deleteToken(token: any): Promise<void> {
+    await this.tokenRepository.delete({ token: token });
   }
 }

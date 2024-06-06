@@ -1,5 +1,8 @@
 export enum TokenType {
-  REFRESH_TOKEN = 'REFRESH_TOKEN',
-  RESET_PASSWORD = 'RESET_PASSWORD',
+  OTP = 'OTP',
   AUTH = 'AUTH',
+}
+
+export enum url {
+  DEV = 'http://localhost:3000',
 }

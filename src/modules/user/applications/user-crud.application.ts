@@ -16,10 +16,14 @@ import { Request, Response } from 'express';
 import { TokenService } from 'src/modules/token/services/token.service';
 import { CreateTokenDTO } from 'src/modules/token/dtos/request.dto';
 import { IToken } from 'src/interfaces/token.interface';
-import { TokenType } from 'src/common/enums/index.enum';
+import { TokenType, url } from 'src/common/enums/index.enum';
 import * as dayjs from 'dayjs';
 import { of } from 'rxjs';
 import { config } from 'src/common/configs/index.config';
+import { UserEntity } from 'src/entities/user.entity';
+import { TokenEntity } from 'src/entities/token.entity';
+import { MailService } from 'src/modules/mail/services/mail.service';
+import { generateToken } from 'src/common/utils/index.util';
 
 @Injectable()
 export class UserCrudApplication {
@@ -27,6 +31,7 @@ export class UserCrudApplication {
     private readonly userService: UserService,
     private readonly roleService: RoleService,
     private readonly tokenService: TokenService,
+    private readonly mailService: MailService,
     private readonly jwtService: JwtService,
     private connection: Connection,
   ) {}
@@ -54,13 +59,32 @@ export class UserCrudApplication {
       }
 
       const hash = await this.userService.getHash(body.password);
+      const otp = generateToken();
+      const usingURL = `${url.DEV}/user/activations?token=${otp}`;
 
-      return await this.userService.create({
+      const user = await this.userService.create({
         ...body,
         username: body.username.toLowerCase(),
         email: body.email,
         password: hash,
       });
+
+      await this.tokenService.create({
+        token: otp,
+        purpose: TokenType.OTP,
+        expiredIn: dayjs().add(1, 'hour').toDate(),
+        isActive: true,
+        user: user,
+      });
+
+      await this.mailService.activationEmail({
+        email: body.email,
+        name: body.username,
+        url: usingURL,
+        token: otp,
+      });
+
+      return user;
     });
   }
 
@@ -151,7 +175,6 @@ export class UserCrudApplication {
 
     if (!exist) {
       const decodeToken = this.jwtService.decode(refreshToken);
-      console.log(decodeToken);
 
       await this.tokenService.deleteToken(decodeToken.user);
 
@@ -232,7 +255,6 @@ export class UserCrudApplication {
       throw new NotFoundException(`User not found`);
     }
 
-    console.log(user);
     delete user.id;
     delete user.password;
     delete user.createdAt;
@@ -240,6 +262,27 @@ export class UserCrudApplication {
     delete user.role;
 
     return user;
+  }
+
+  async activateAccount(token: string) {
+    const existToken = await this.tokenService.findByToken(token);
+    if (existToken.purpose !== 'OTP') {
+      throw new BadRequestException(`Invalid Token Type`);
+    }
+
+    await this.connection.manager.save(UserEntity, {
+      id: existToken.user.id,
+      isActive: true,
+      updatedAt: new Date(),
+    });
+
+    await this.connection.manager.save(TokenEntity, {
+      id: existToken.id,
+      isActive: false,
+      updatedAt: new Date(),
+    });
+
+    return;
   }
 
   generateRefreshToken(payload: { id: string; username: string }): string {

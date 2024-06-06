@@ -4,7 +4,7 @@ import { IUser } from './user.interface';
 export interface IToken {
   id: string;
   token: string;
-  puprose: TokenType;
+  purpose: TokenType;
   isActive: boolean;
   expiredIn: Date;
   createdAt: Date;

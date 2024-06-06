@@ -3,6 +3,8 @@ import { Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
 import { config } from './index.config';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { strict } from 'assert';
 
 const templateDir = join(__dirname, '../..', 'common/templates');
 
@@ -28,5 +30,9 @@ export const mailerConfig: MailerOptions = {
   },
   template: {
     dir: templateDir,
+    adapter: new HandlebarsAdapter(),
+    options: {
+      strict: true,
+    },
   },
 };
