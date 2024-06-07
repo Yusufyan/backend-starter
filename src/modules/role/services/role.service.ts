@@ -40,7 +40,7 @@ export class RoleService {
     });
   }
 
-  async findOne(code: string): Promise<IRole> {
+  async findByCode(code: string): Promise<IRole> {
     return await this.roleRepository.findOne({
       where: {
         code: code,

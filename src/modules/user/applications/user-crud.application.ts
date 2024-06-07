@@ -52,21 +52,22 @@ export class UserCrudApplication {
         throw new ConflictException(`Username already exists`, null);
       }
 
-      const existRole = await this.userService.findById(body.role);
+      const existRole = await this.roleService.findByCode(body.role);
 
-      if (existRole) {
-        throw new ConflictException(`User doesn't exists`, null);
+      if (!existRole) {
+        throw new ConflictException(`User role doesn't exists`, null);
       }
 
       const hash = await this.userService.getHash(body.password);
       const otp = generateToken();
-      const usingURL = `${url.DEV}/user/activations?token=${otp}`;
+      const usingURL = `${url.DEV}/user/activation?token=${otp}`;
 
       const user = await this.userService.create({
         ...body,
         username: body.username.toLowerCase(),
         email: body.email,
         password: hash,
+        role: existRole.id,
       });
 
       await this.tokenService.create({
@@ -83,6 +84,10 @@ export class UserCrudApplication {
         url: usingURL,
         token: otp,
       });
+
+      delete user.password;
+      delete user.role;
+      delete user.id;
 
       return user;
     });
@@ -191,8 +196,16 @@ export class UserCrudApplication {
       username: exist.user.username,
     });
 
-    await this.tokenService.update(exist.id, {
+    await this.tokenService.create({
       token: newRefreshToken,
+      purpose: TokenType.AUTH,
+      isActive: true,
+      expiredIn: dayjs().add(1, 'day').toDate(),
+      user: exist.user,
+    });
+
+    await this.tokenService.update(exist.id, {
+      isActive: false,
     });
 
     if (cookies?.jwt) {
@@ -279,7 +292,6 @@ export class UserCrudApplication {
     await this.connection.manager.save(TokenEntity, {
       id: existToken.id,
       isActive: false,
-      updatedAt: new Date(),
     });
 
     return;

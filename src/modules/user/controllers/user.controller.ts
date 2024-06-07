@@ -23,8 +23,10 @@ import { CreateTokenDTO } from 'src/modules/token/dtos/request.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/roles.guard';
 import { Permissions } from 'src/roles.decorator';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('user')
+@ApiTags('Auth')
 export class UserController {
   constructor(private readonly crudApplication: UserCrudApplication) {}
 
@@ -74,6 +76,7 @@ export class UserController {
   @Put(':id')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Permissions('WRITE_USER')
+  @ApiBearerAuth()
   async update(
     @Param('id') id: string,
     @Body() body: UpdateUserDTO,
@@ -89,10 +92,8 @@ export class UserController {
   @Get('/')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Permissions('READ_USER')
-  async getAll(
-    @Param('id') id: string,
-    @Req() req: Request,
-  ): Promise<IApiResponse<any>> {
+  @ApiBearerAuth()
+  async getAll(@Req() req: Request): Promise<IApiResponse<any>> {
     const response = await this.crudApplication.getUserAll(req);
 
     return {
@@ -104,6 +105,7 @@ export class UserController {
   @Get('/details')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Permissions('READ_USER')
+  @ApiBearerAuth()
   async getDetails(@Param() body: GetUserDTO): Promise<IApiResponse<any>> {
     const response = await this.crudApplication.getUserDetail(body);
 

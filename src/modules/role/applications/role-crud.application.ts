@@ -24,7 +24,7 @@ export class RoleCRUDApplication {
         throw new ConflictException(`Role Name already exists`, null);
       }
 
-      const existCode = await this.roleService.findOne(body.code);
+      const existCode = await this.roleService.findByCode(body.code);
 
       if (existCode) {
         throw new ConflictException(`Role Code already exists`, null);

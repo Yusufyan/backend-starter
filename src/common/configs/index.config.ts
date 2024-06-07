@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 export const config = {
   nodeEnv: process.env.NODE_ENV,
-  port: process.env.PORT || '3000',
+  port: process.env.PORT || '3001',
   name: process.env.NAME,
   secret: process.env.SECRET_KEY,
   database: {

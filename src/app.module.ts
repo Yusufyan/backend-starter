@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { HttpException, Module, ValidationPipe } from '@nestjs/common';
 import { DatabaseModule } from './modules/database/database.module';
 import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
@@ -8,6 +8,7 @@ import { CommandModule } from 'nestjs-command';
 import { PassportModule } from '@nestjs/passport';
 import { TokenModule } from './modules/token/token.module';
 import { MailModule } from './modules/mail/mail.module';
+import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -24,6 +25,12 @@ import { MailModule } from './modules/mail/mail.module';
     MailModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      // Validation formatting response
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
+    },
+  ],
 })
 export class AppModule {}
